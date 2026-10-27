@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>NFCraft CRM</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f4f1;--sf:#fff;--tx:#16181d;--mu:#697079;--bd:#e0e0da;--ac:#2f5fe0;--on:#fff;--red:#d6372f;--amb:#c4730a;
+--s0:#80858e;--s1:#2f5fe0;--s2:#d98a14;--s3:#7a4fd6;--s4:#1c9a60;color-scheme:light}
+:root[data-theme=dark]{--bg:#111316;--sf:#1a1d22;--tx:#e8e9ec;--mu:#9199a3;--bd:#2a2e35;--ac:#7f9fff;--on:#0e1424;--red:#ff6d64;--amb:#f2a93b;
+--s0:#9aa0a9;--s1:#7f9fff;--s2:#f0a63a;--s3:#ab8dff;--s4:#4cc58b;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.45 Manrope,system-ui,-apple-system,"Segoe UI",sans-serif}
+header{position:sticky;top:0;z-index:5;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;padding:10px 16px;background:var(--sf);border-bottom:1px solid var(--bd)}
+h1{font-size:18px;font-weight:800;margin:0 auto 0 0;letter-spacing:-.01em}
+nav{display:flex;gap:2px}
+nav button{border:0;background:none;color:var(--mu);font:inherit;font-weight:700;padding:8px 12px;border-bottom:2px solid transparent;cursor:pointer}
+nav button.on{color:var(--tx);border-color:var(--ac)}
+main{max-width:1200px;margin:0 auto;padding:16px}
+input,select,textarea{font:inherit;font-size:16px;color:var(--tx);background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:7px 9px;min-width:0}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--ac);outline-offset:-1px}
+.b{font:inherit;font-weight:700;font-size:14px;color:var(--tx);background:var(--sf);border:1px solid var(--bd);border-radius:8px;padding:8px 12px;cursor:pointer}
+.b.p{background:var(--ac);border-color:var(--ac);color:var(--on)}
+.b.d{color:var(--red)}
+.b.i{padding:8px 10px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;align-items:center}
+.bar input[type=search]{flex:1 1 180px}
+.sum{color:var(--mu);font-size:13px;margin:0 0 8px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:16px}
+.stat{background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:12px 14px}
+.stat small{display:block;color:var(--mu);font-size:13px}
+.stat b{font-size:22px;font-weight:800}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}
+.panel{background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:6px 14px 10px}
+.panel h2{font-size:15px;margin:10px 0 4px}
+.panel ul{list-style:none;margin:0;padding:0}
+.panel li{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-top:1px solid var(--bd);cursor:pointer}
+.panel li small{display:block;color:var(--mu)}
+.empty{color:var(--mu);padding:10px 0}
+.late{color:var(--red);font-weight:700}.hot{color:var(--amb);font-weight:700}
+.scroll{overflow-x:auto;background:var(--sf);border:1px solid var(--bd);border-radius:10px}
+table{border-collapse:collapse;width:100%;min-width:820px}
+th{text-align:left;font-size:13px;color:var(--mu);font-weight:500;padding:8px 6px;border-bottom:1px solid var(--bd)}
+td{padding:3px 4px;border-bottom:1px solid var(--bd)}
+tr:last-child td{border-bottom:0}
+td input,td select{width:100%;background:transparent;border-color:transparent;padding:6px}
+td input:hover,td select:hover{border-color:var(--bd)}
+tr.late td:first-child{box-shadow:inset 3px 0 var(--red)}
+tr.hot td:first-child{box-shadow:inset 3px 0 var(--amb)}
+td.n{white-space:nowrap}
+.board{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x proximity;padding-bottom:8px;align-items:flex-start}
+.col{flex:0 0 250px;scroll-snap-align:start;background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:8px;min-height:120px}
+.col h3{font-size:14px;margin:4px 4px 8px;display:flex;justify-content:space-between}
+.col h3 span{color:var(--mu);font-weight:500}
+.card{background:var(--bg);border:1px solid var(--bd);border-left:4px solid;border-radius:8px;padding:9px 10px;margin-bottom:8px;cursor:grab}
+.card b{display:block}.card small{color:var(--mu)}
+.card .ft{display:flex;justify-content:space-between;align-items:center;margin-top:6px;gap:6px;font-size:13px}
+.card .mv{display:flex;gap:4px}
+.card .mv button{border:1px solid var(--bd);background:var(--sf);color:var(--tx);border-radius:6px;padding:3px 9px;cursor:pointer;font:inherit}
+dialog{border:1px solid var(--bd);border-radius:12px;background:var(--sf);color:var(--tx);width:min(480px,calc(100% - 24px));padding:18px;max-height:92vh}
+dialog::backdrop{background:#0009}
+dialog h2{margin:0 0 12px;font-size:18px}
+label{display:block;font-size:13px;color:var(--mu);margin-bottom:10px}
+label input,label select,label textarea{display:block;width:100%;margin-top:4px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.act{display:flex;gap:8px;margin-top:6px}.act span{flex:1}
+.hl{list-style:none;padding:0;margin:0 0 10px}
+.hl li{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-top:1px solid var(--bd);cursor:pointer}
+#toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:9px 16px;border-radius:8px;font-weight:700;opacity:0;pointer-events:none;transition:opacity .2s}
+#toast.on{opacity:1}
+@media(max-width:560px){main{padding:12px}nav button{padding:8px 9px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>NFCraft CRM</h1>
+  <nav>
+    <button data-v="dash" onclick="go('dash')">Дашборд</button>
+    <button data-v="orders" onclick="go('orders')">Заказы</button>
+    <button data-v="clients" onclick="go('clients')">Клиенты</button>
+  </nav>
+  <div class="bar" style="margin:0">
+    <button class="b p" onclick="openOrder()">+ Заказ</button>
+    <button class="b i" title="Данные" onclick="openData()">⇅</button>
+    <button class="b i" title="Тема" onclick="toggleTheme()">◐</button>
+  </div>
+</header>
+<main id="app"></main>
+<dialog id="md"></dialog>
+<div id="toast"></div>
+<datalist id="src"><option>Telegram</option><option>Instagram</option><option>Рекомендация</option><option>Визит</option><option>Сайт</option><option>Другое</option></datalist>
+<input type="file" id="file" accept=".json,.csv" hidden onchange="imp(this)">
+
+<script>
+const CUR='€';
+const ST=['Новый','В печати','Согласование','Передан','Оплачен'];
+const PAY={no:'Не оплачен',adv:'Аванс',yes:'Оплачен'};
+let db={clients:[],orders:[]},view='dash',mode='table';
+const f={q:'',st:'',cl:'',from:'',to:'',sort:'dl',cq:''};
+try{const s=JSON.parse(localStorage.getItem('crm')||'null');if(s&&s.clients&&s.orders)db=s}catch(e){}
+const D=document.getElementById('md');
+const $=s=>document.querySelector(s);
+const uid=()=>Math.random().toString(36).slice(2,9);
+const save=()=>{try{localStorage.setItem('crm',JSON.stringify(db))}catch(e){toast('Не удалось сохранить в браузере')}};
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const TODAY=()=>ymd(new Date());
+const days=d=>Math.round((new Date(d+'T00:00')-new Date(TODAY()+'T00:00'))/864e5);
+const money=n=>(+n||0).toLocaleString('ru-RU')+' '+CUR;
+const cname=id=>{const c=db.clients.find(c=>c.id==id);return c?c.name:'—'};
+const dcls=o=>{if(o.status>=3||!o.dl)return'';const d=days(o.dl);return d<0?'late':d<=2?'hot':''};
+const rel=o=>{if(!o.dl)return'без срока';const d=days(o.dl);const t=new Date(o.dl+'T00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'short'});
+  return t+(o.status<3?(d<0?' (просрочен на '+(-d)+' дн.)':d==0?' (сегодня)':d==1?' (завтра)':''):'')};
+let tt;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),2200)}
+const byId=id=>db.orders.find(x=>x.id==id);
+
+/* ---------- логика статусов и оплаты ---------- */
+function norm(o){
+  if(o.status==4)o.pay='yes';
+  if(o.pay=='yes'){o.paidAt=o.paidAt||TODAY();if(o.status==3)o.status=4}
+  else{o.paidAt='';if(o.status==4)o.status=3}
+}
+function setSt(id,s){const o=byId(id);if(!o)return;if(o.status==4&&+s<4)o.pay='no';o.status=+s;norm(o);save();render()}
+function setPay(id,p){const o=byId(id);o.pay=p;norm(o);save();render()}
+function upd(id,k,v){const o=byId(id);o[k]=(k=='price'||k=='qty')?(+v||0):v;save();render()}
+function updC(id,k,v){db.clients.find(c=>c.id==id)[k]=v;save()}
+
+/* ---------- навигация ---------- */
+function go(v){view=v;render()}
+function render(){
+  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v==view));
+  $('#app').innerHTML={dash:dash,orders:orders,clients:clients}[view]();
+}
+
+/* ---------- дашборд ---------- */
+function dash(){
+  const O=db.orders,ym=TODAY().slice(0,7);
+  const work=O.filter(o=>o.status==1||o.status==2).length,fresh=O.filter(o=>o.status==0).length;
+  const inc=O.filter(o=>o.pay=='yes'&&(o.paidAt||o.dl||'').startsWith(ym)).reduce((s,o)=>s+o.price,0);
+  const debt=O.filter(o=>o.status==3&&o.pay!='yes'),debtSum=debt.reduce((s,o)=>s+o.price,0);
+  const late=O.filter(o=>dcls(o)=='late').length;
+  const pcs=O.filter(o=>o.status==1||o.status==2).reduce((s,o)=>s+(o.qty||1),0);
+  const near=O.filter(o=>o.status<3&&o.dl).sort((a,b)=>a.dl<b.dl?-1:1).slice(0,6);
+  const li=(o,r)=>`<li onclick="openOrder('${o.id}')"><span><b>${esc(o.title)}</b><small>${esc(cname(o.cid))}</small></span><span class="${dcls(o)}" style="text-align:right">${r}</span></li>`;
+  return `<div class="stats">
+    <div class="stat"><small>В печати и согласовании</small><b>${work}</b></div>
+    <div class="stat"><small>Штук в работе</small><b>${pcs}</b></div>
+    <div class="stat"><small>Новые</small><b>${fresh}</b></div>
+    <div class="stat"><small>Просрочено</small><b class="${late?'late':''}">${late}</b></div>
+    <div class="stat"><small>Доход за месяц</small><b>${money(inc)}</b></div>
+    <div class="stat"><small>Ждут оплаты</small><b>${money(debtSum)}</b></div></div>
+  <div class="two">
+    <div class="panel"><h2>Ближайшие дедлайны</h2><ul>${near.map(o=>li(o,rel(o))).join('')||'<div class="empty">Нет активных заказов с дедлайном.</div>'}</ul></div>
+    <div class="panel"><h2>Должники: передано, но не оплачено</h2><ul>${debt.map(o=>li(o,money(o.price))).join('')||'<div class="empty">Все переданные заказы оплачены.</div>'}</ul></div>
+  </div>`;
+}
+
+/* ---------- заказы ---------- */
+function list(){
+  const q=f.q.toLowerCase();
+  const r=db.orders.filter(o=>(f.st===''||o.status==f.st)&&(!f.cl||o.cid==f.cl)&&(!f.from||(o.dl&&o.dl>=f.from))&&(!f.to||(o.dl&&o.dl<=f.to))&&(!q||(o.title+' '+o.desc+' '+cname(o.cid)).toLowerCase().includes(q)));
+  const k={dl:(a,b)=>(a.dl||'9')<(b.dl||'9')?-1:1,price:(a,b)=>b.price-a.price,new:(a,b)=>(b.created||0)-(a.created||0),st:(a,b)=>a.status-b.status}[f.sort];
+  return r.sort(k);
+}
+function orders(){
+  const opt=(arr,sel,all)=>`<option value="">${all}</option>`+arr.map(([v,t])=>`<option value="${v}" ${String(v)==String(sel)?'selected':''}>${esc(t)}</option>`).join('');
+  return `<div class="bar">
+    <input type="search" placeholder="Поиск по названию, клиенту" value="${esc(f.q)}" oninput="f.q=this.value;$('#res').innerHTML=res()">
+    <select onchange="f.st=this.value;render()">${opt(ST.map((s,i)=>[i,s]),f.st,'Все статусы')}</select>
+    <select onchange="f.cl=this.value;render()">${opt(db.clients.map(c=>[c.id,c.name]),f.cl,'Все клиенты')}</select>
+    <label style="margin:0">с <input type="date" value="${f.from}" onchange="f.from=this.value;render()"></label>
+    <label style="margin:0">по <input type="date" value="${f.to}" onchange="f.to=this.value;render()"></label>
+    <select onchange="f.sort=this.value;render()">
+      ${[['dl','По дедлайну'],['price','По цене'],['new','Сначала новые'],['st','По статусу']].map(([v,t])=>`<option value="${v}" ${f.sort==v?'selected':''}>${t}</option>`).join('')}</select>
+    <button class="b" onclick="mode=mode=='table'?'board':'table';render()">${mode=='table'?'Доска':'Таблица'}</button>
+  </div><div id="res">${res()}</div>`;
+}
+function res(){
+  const r=list();
+  if(!db.orders.length)return '<div class="empty">Заказов пока нет. Нажмите «+ Заказ», чтобы добавить первый.</div>';
+  const head=`<p class="sum">Заказов: ${r.length}, на сумму ${money(r.reduce((s,o)=>s+o.price,0))}</p>`;
+  if(!r.length)return head+'<div class="empty">По этим фильтрам ничего не нашлось.</div>';
+  return head+(mode=='table'?tbl(r):board(r));
+}
+const stSel=o=>`<select style="color:var(--s${o.status});font-weight:700" onchange="setSt('${o.id}',this.value)">${ST.map((s,i)=>`<option value="${i}" ${i==o.status?'selected':''}>${s}</option>`).join('')}</select>`;
+const paySel=o=>`<select onchange="setPay('${o.id}',this.value)">${Object.entries(PAY).map(([k,t])=>`<option value="${k}" ${k==o.pay?'selected':''}>${t}</option>`).join('')}</select>`;
+function tbl(r){
+  return `<div class="scroll"><table class="tb"><thead><tr><th>Заказ</th><th>Клиент</th><th>Срок</th><th>Шт.</th><th>Сумма</th><th>Статус</th><th>Оплата</th><th></th></tr></thead><tbody>${r.map(o=>`
+  <tr class="${dcls(o)}">
+    <td><input value="${esc(o.title)}" onchange="upd('${o.id}','title',this.value)"></td>
+    <td><select onchange="upd('${o.id}','cid',this.value)"><option value="">—</option>${db.clients.map(c=>`<option value="${c.id}" ${c.id==o.cid?'selected':''}>${esc(c.name)}</option>`).join('')}</select></td>
+    <td><input type="date" value="${o.dl||''}" onchange="upd('${o.id}','dl',this.value)" class="${dcls(o)}"></td>
+    <td><input type="number" min="1" value="${o.qty||1}" onchange="upd('${o.id}','qty',this.value)" style="width:70px"></td>
+    <td><input type="number" min="0" value="${o.price||0}" onchange="upd('${o.id}','price',this.value)" style="width:100px"></td>
+    <td>${stSel(o)}</td><td>${paySel(o)}</td>
+    <td class="n">${o.link?`<a class="b i" href="${esc(o.link)}" target="_blank" rel="noopener" title="Материалы">↗</a> `:''}<button class="b i" title="Открыть" onclick="openOrder('${o.id}')">✎</button> <button class="b i d" title="Удалить" onclick="delOrder('${o.id}')">✕</button></td>
+  </tr>`).join('')}</tbody></table></div>`;
+}
+function board(r){
+  return `<div class="board">${ST.map((s,i)=>{const c=r.filter(o=>o.status==i);
+    return `<div class="col" ondragover="event.preventDefault()" ondrop="setSt(event.dataTransfer.getData('t'),${i})">
+    <h3 style="color:var(--s${i})">${s}<span>${c.length}</span></h3>${c.map(o=>`
+    <div class="card" style="border-left-color:var(--s${i})" draggable="true" ondragstart="event.dataTransfer.setData('t','${o.id}')">
+      <div onclick="openOrder('${o.id}')"><b>${esc(o.title)}</b><small>${esc(cname(o.cid))}</small></div>
+      <div class="ft"><span class="${dcls(o)}">${rel(o)}</span><span>${o.qty||1} шт, ${money(o.price)}</span></div>
+      <div class="ft"><small>${PAY[o.pay]}</small><span class="mv">${i>0?`<button onclick="setSt('${o.id}',${i-1})">←</button>`:''}${i<4?`<button onclick="setSt('${o.id}',${i+1})">→</button>`:''}</span></div>
+    </div>`).join('')}</div>`}).join('')}</div>`;
+}
+
+/* ---------- форма заказа ---------- */
+function openOrder(id,cid){
+  const o=id?byId(id):{title:'',cid:cid||'',desc:'',dl:'',price:'',qty:1,pay:'no',link:'',status:0};
+  D.innerHTML=`<h2>${id?'Заказ':'Новый заказ'}</h2>
+  <label>Название<input id="f_title" value="${esc(o.title)}"></label>
+  <label>Клиент<select id="f_cid"><option value="">Не выбран</option>${db.clients.map(c=>`<option value="${c.id}" ${c.id==o.cid?'selected':''}>${esc(c.name)}</option>`).join('')}</select></label>
+  <label>Или новый клиент<input id="f_nc" placeholder="Имя"></label>
+  <label>Детали: дизайн, логотип, что записать на чип<textarea id="f_desc" rows="3">${esc(o.desc)}</textarea></label>
+  <div class="g2"><label>Срок<input id="f_dl" type="date" value="${o.dl||''}"></label><label>Количество, шт<input id="f_qty" type="number" min="1" value="${o.qty||1}"></label></div>
+  <label>Сумма заказа, ${CUR}<input id="f_price" type="number" min="0" value="${o.price}"></label>
+  <div class="g2"><label>Статус<select id="f_status">${ST.map((s,i)=>`<option value="${i}" ${i==o.status?'selected':''}>${s}</option>`).join('')}</select></label>
+  <label>Оплата<select id="f_pay">${Object.entries(PAY).map(([k,t])=>`<option value="${k}" ${k==o.pay?'selected':''}>${t}</option>`).join('')}</select></label></div>
+  <label>Ссылка на макет или логотип<input id="f_link" type="url" value="${esc(o.link)}" placeholder="https://"></label>
+  <div class="act">${id?`<button class="b d" onclick="delOrder('${id}')">Удалить</button>`:''}<span></span><button class="b" onclick="D.close()">Отмена</button><button class="b p" onclick="saveOrder('${id||''}')">Сохранить</button></div>`;
+  D.showModal();
+}
+function saveOrder(id){
+  const v=k=>$('#f_'+k).value.trim();
+  if(!v('title')){toast('Укажите название заказа');return}
+  let cid=v('cid'),nn=v('nc');
+  if(nn){let c=db.clients.find(c=>c.name.toLowerCase()==nn.toLowerCase());if(!c){c={id:uid(),name:nn,contact:'',source:'',notes:''};db.clients.push(c)}cid=c.id}
+  const o=id?byId(id):{id:uid(),created:Date.now()};
+  if(!id)db.orders.push(o);
+  const ns=+v('status');let p=v('pay');
+  if(id&&o.status==4&&ns<4&&p=='yes')p='no';
+  Object.assign(o,{title:v('title'),cid,desc:$('#f_desc').value,dl:v('dl'),price:+v('price')||0,qty:+v('qty')||1,link:v('link'),status:ns,pay:p});
+  norm(o);save();D.close();render();
+}
+function delOrder(id){if(!confirm('Удалить этот заказ?'))return;db.orders=db.orders.filter(o=>o.id!=id);save();if(D.open)D.close();render()}
+
+/* ---------- клиенты ---------- */
+function cTable(){
+  const q=f.cq.toLowerCase();
+  const r=db.clients.filter(c=>!q||(c.name+' '+c.contact+' '+c.source+' '+c.notes).toLowerCase().includes(q));
+  if(!db.clients.length)return '<div class="empty">Клиентов пока нет. Нажмите «+ Клиент» или добавьте нового прямо в заказе.</div>';
+  if(!r.length)return '<div class="empty">Никого не нашлось.</div>';
+  return `<div class="scroll"><table><thead><tr><th>Имя</th><th>Контакт</th><th>Источник</th><th>Заметки</th><th>Заказы</th><th></th></tr></thead><tbody>${r.map(c=>{
+    const os=db.orders.filter(o=>o.cid==c.id),paid=os.filter(o=>o.pay=='yes').reduce((s,o)=>s+o.price,0);
+    return `<tr>
+    <td><input value="${esc(c.name)}" onchange="updC('${c.id}','name',this.value)"></td>
+    <td><input value="${esc(c.contact)}" placeholder="@telegram, instagram, почта" onchange="updC('${c.id}','contact',this.value)"></td>
+    <td><input list="src" value="${esc(c.source)}" onchange="updC('${c.id}','source',this.value)"></td>
+    <td><input value="${esc(c.notes)}" onchange="updC('${c.id}','notes',this.value)"></td>
+    <td class="n">${os.length}, оплачено ${money(paid)}</td>
+    <td class="n"><button class="b i" onclick="openHist('${c.id}')">История</button> <button class="b i d" onclick="delClient('${c.id}')">✕</button></td></tr>`}).join('')}</tbody></table></div>`;
+}
+function clients(){
+  return `<div class="bar"><input type="search" placeholder="Поиск клиента" value="${esc(f.cq)}" oninput="f.cq=this.value;$('#cres').innerHTML=cTable()"><button class="b p" onclick="openClient()">+ Клиент</button></div><div id="cres">${cTable()}</div>`;
+}
+function openClient(){
+  D.innerHTML=`<h2>Новый клиент</h2>
+  <label>Имя<input id="c_name"></label>
+  <label>Контакт (Telegram, Instagram, почта)<input id="c_contact"></label>
+  <label>Источник<input id="c_source" list="src"></label>
+  <label>Заметки<textarea id="c_notes" rows="3"></textarea></label>
+  <div class="act"><span></span><button class="b" onclick="D.close()">Отмена</button><button class="b p" onclick="saveClient()">Сохранить</button></div>`;
+  D.showModal();
+}
+function saveClient(){
+  const v=k=>$('#c_'+k).value.trim();
+  if(!v('name')){toast('Укажите имя клиента');return}
+  db.clients.push({id:uid(),name:v('name'),contact:v('contact'),source:v('source'),notes:v('notes')});
+  save();D.close();render();
+}
+function delClient(id){
+  const n=db.orders.filter(o=>o.cid==id).length;
+  if(!confirm(n?`Удалить клиента и его заказы (${n})?`:'Удалить клиента?'))return;
+  db.clients=db.clients.filter(c=>c.id!=id);db.orders=db.orders.filter(o=>o.cid!=id);save();render();
+}
+function openHist(id){
+  const c=db.clients.find(c=>c.id==id),os=db.orders.filter(o=>o.cid==id).sort((a,b)=>(b.created||0)-(a.created||0));
+  const paid=os.filter(o=>o.pay=='yes').reduce((s,o)=>s+o.price,0),open=os.filter(o=>o.pay!='yes').reduce((s,o)=>s+o.price,0);
+  D.innerHTML=`<h2>${esc(c.name)}</h2><p class="sum">${esc(c.contact)}${c.source?' — '+esc(c.source):''}<br>Оплачено: ${money(paid)}. Ещё не оплачено: ${money(open)}.</p>
+  <ul class="hl">${os.map(o=>`<li onclick="openOrder('${o.id}')"><span><b>${esc(o.title)}</b><br><small style="color:var(--s${o.status})">${ST[o.status]}</small></span><span style="text-align:right">${money(o.price)}<br><small class="${dcls(o)}">${rel(o)}</small></span></li>`).join('')||'<div class="empty">Заказов ещё не было.</div>'}</ul>
+  <div class="act"><span></span><button class="b" onclick="D.close()">Закрыть</button><button class="b p" onclick="openOrder('','${id}')">+ Заказ</button></div>`;
+  D.showModal();
+}
+
+/* ---------- экспорт и импорт ---------- */
+function openData(){
+  D.innerHTML=`<h2>Данные</h2>
+  <p class="sum">Всё хранится в этом браузере. Делайте резервную копию и переносите данные между устройствами через файл.</p>
+  <div class="bar"><button class="b" onclick="expJSON()">Экспорт JSON (всё)</button><button class="b" onclick="expCSV()">Экспорт CSV (заказы)</button></div>
+  <div class="bar"><button class="b" onclick="$('#file').click()">Импорт JSON или CSV</button></div>
+  <p class="sum">JSON заменяет все данные. CSV добавляет заказы: Заказ; Клиент; Что сделать; Дедлайн; Цена; Статус; Оплата; Ссылка; Количество.</p>
+  <div class="act"><span></span><button class="b" onclick="D.close()">Закрыть</button></div>`;
+  D.showModal();
+}
+function dl(name,text,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+const expJSON=()=>dl('crm-'+TODAY()+'.json',JSON.stringify(db,null,1),'application/json');
+const q2=s=>'"'+String(s==null?'':s).replace(/"/g,'""')+'"';
+function expCSV(){
+  const h=['Заказ','Клиент','Что сделать','Дедлайн','Цена','Статус','Оплата','Ссылка','Количество'];
+  const rows=db.orders.map(o=>[o.title,cname(o.cid),o.desc,o.dl,o.price,ST[o.status],PAY[o.pay],o.link,o.qty||1]);
+  dl('orders-'+TODAY()+'.csv','\ufeff'+[h,...rows].map(r=>r.map(q2).join(';')).join('\n'),'text/csv');
+}
+function parseCSV(t){
+  t=t.replace(/^\ufeff/,'');const d=t.split('\n')[0].includes(';')?';':',';
+  const rows=[];let r=[],c='',q=false;
+  for(let i=0;i<t.length;i++){const ch=t[i];
+    if(q){if(ch=='"'){if(t[i+1]=='"'){c+='"';i++}else q=false}else c+=ch}
+    else if(ch=='"')q=true;
+    else if(ch==d){r.push(c);c=''}
+    else if(ch=='\n'||ch=='\r'){if(ch=='\r'&&t[i+1]=='\n')i++;r.push(c);c='';rows.push(r);r=[]}
+    else c+=ch}
+  if(c||r.length){r.push(c);rows.push(r)}
+  return rows.filter(r=>r.some(x=>x.trim()));
+}
+function imp(inp){
+  const fl=inp.files[0];if(!fl)return;const rd=new FileReader();
+  rd.onload=()=>{
+    try{
+      if(fl.name.toLowerCase().endsWith('.json')){
+        const j=JSON.parse(rd.result);if(!Array.isArray(j.clients)||!Array.isArray(j.orders))throw 0;
+        if(!confirm('Заменить все текущие данные данными из файла?'))return;db=j;
+      }else{
+        const rows=parseCSV(rd.result).slice(1);
+        rows.forEach(r=>{
+          const nm=(r[1]||'').trim();let cid='';
+          if(nm){let c=db.clients.find(c=>c.name.toLowerCase()==nm.toLowerCase());if(!c){c={id:uid(),name:nm,contact:'',source:'',notes:''};db.clients.push(c)}cid=c.id}
+          const pk=Object.keys(PAY).find(k=>PAY[k]==(r[6]||'').trim())||'no';
+          const o={id:uid(),created:Date.now(),title:r[0]||'Без названия',cid,desc:r[2]||'',dl:/^\d{4}-\d\d-\d\d$/.test(r[3]||'')?r[3]:'',price:+String(r[4]||0).replace(/\s/g,'')||0,status:Math.max(0,ST.indexOf((r[5]||'').trim())),pay:pk,link:r[7]||'',qty:+r[8]||1};
+          norm(o);db.orders.push(o);
+        });
+      }
+      save();D.close();render();toast('Импорт завершён');
+    }catch(e){toast('Не удалось прочитать файл')}
+    inp.value='';
+  };
+  rd.readAsText(fl);
+}
+
+/* ---------- тема ---------- */
+function setTheme(t){document.documentElement.dataset.theme=t;try{localStorage.setItem('crmTheme',t)}catch(e){}}
+function toggleTheme(){setTheme(document.documentElement.dataset.theme=='dark'?'light':'dark')}
+(function(){let t;try{t=localStorage.getItem('crmTheme')}catch(e){}
+  document.documentElement.dataset.theme=t||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light')})();
+
+render();
+</script>
+</body>
+</html>
